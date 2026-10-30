@@ -1,9 +1,38 @@
 import json
 import os
 from inventory import Inventory
-from product import Product
+from product import PhysicalProduct, DigitalProduct
 
 FILENAME = "inventory.json"
+
+
+def product_to_dict(product):
+    data = {
+        "ID": product.get_product_id(),
+        "Name": product.get_name(),
+        "Price": product.get_price(),
+        "Stock": product.get_stock(),
+    }
+    if isinstance(product, PhysicalProduct):
+        data["Type"] = "physical"
+        data["Weight"] = product.get_weight()
+    elif isinstance(product, DigitalProduct):
+        data["Type"] = "digital"
+        data["Download Size"] = product.get_download_size()
+    return data
+
+
+def dict_to_product(item):
+    product_type = item["Type"]
+    price = float(str(item["Price"]).replace("$", ""))
+
+    if product_type == "physical":
+        return PhysicalProduct(item["ID"], item["Name"], price,
+                               item["Stock"], item["Weight"])
+    if product_type == "digital":
+        return DigitalProduct(item["ID"], item["Name"], price,
+                              item["Stock"], item["Download Size"])
+    raise ValueError(f"Unknown product type: {product_type}")
 
 
 def load_inventory(inventory):
@@ -17,20 +46,15 @@ def load_inventory(inventory):
         return
 
     for item in data:
-        price = float(str(item["Price"]).replace("$", ""))
-        inventory.add_product(Product(item["ID"], item["Name"], price, item["Stock"]))
+        try:
+            inventory.add_product(dict_to_product(item))
+        except (KeyError, ValueError) as e:
+            print(f"Warning: skipped an invalid product entry ({e}).")
 
 
 def save_inventory(inventory):
     print("Saving inventory... ")
-    data = []
-    for product in inventory.get_all_products():
-        data.append({
-            "ID": product.get_product_id(),
-            "Name": product.get_name(),
-            "Price": product.get_price(),
-            "Stock": product.get_stock()
-        })
+    data = [product_to_dict(p) for p in inventory.get_all_products()]
     with open(FILENAME, "w") as f:
         json.dump(data, f, indent=4)
     print("Inventory saved successfully to inventory.json.")
@@ -54,6 +78,31 @@ def show_menu():
 """)
 
 
+def prompt_new_product():
+    """Ask the user for product details and return the right subclass, or None."""
+    print("Product type:\n1. Physical\n2. Digital")
+    type_choice = input("Choose type (1-2): ").strip()
+    if type_choice not in ("1", "2"):
+        print("Invalid product type.")
+        return None
+
+    try:
+        product_id = input("Enter Product ID: ").strip()
+        name = input("Enter Name: ").strip()
+        price = float(input("Enter Price: "))
+        stock = int(input("Enter Stock: "))
+
+        if type_choice == "1":
+            weight = float(input("Enter Weight (kg): "))
+            return PhysicalProduct(product_id, name, price, stock, weight)
+        else:
+            download_size = float(input("Enter Download Size (MB): "))
+            return DigitalProduct(product_id, name, price, stock, download_size)
+    except ValueError:
+        print("Invalid numeric value.")
+        return None
+
+
 main_inventory = Inventory()
 load_inventory(main_inventory)
 
@@ -69,15 +118,10 @@ while True:
         case 1:
             main_inventory.display_all()
         case 2:
-            try:
-                product_id = input("Enter Product ID: ").strip()
-                name = input("Enter Name: ").strip()
-                price = float(input("Enter Price: "))
-                stock = int(input("Enter Stock: "))
-            except ValueError:
-                print("Invalid price or stock value.")
+            product = prompt_new_product()
+            if product is None:
                 continue
-            main_inventory.add_product(Product(product_id, name, price, stock))
+            main_inventory.add_product(product)
             print("Product added.")
         case 3:
             product_id = input("Enter Product ID: ").strip()
