@@ -1,4 +1,6 @@
-class Product:
+from abc import ABC, abstractmethod 
+
+class Product(ABC):
     def __init__(self, product_id, name, price, stock):
         self.__product_id = product_id
         self.__name = name
@@ -30,6 +32,10 @@ class Product:
     def get_stock(self):
         return self.__stock
 
+    @abstractmethod
+    def get_fulfilment_info(self):
+        pass
+
 class PhysicalProduct(Product):
     def __init__(self, product_id, name, price, stock, weight):
         super().__init__(product_id, name, price, stock)
@@ -38,7 +44,11 @@ class PhysicalProduct(Product):
 
     # Override the parent method
     def display_information(self):
-        print(f"ID: {self.__product_id} | Name: {self.__name} | Price: {self.__price} | Stock: {self.__stock} | Weight: {self.__weight}")
+        super().display_information()
+        print(f"Weight: {self.__weight}")
+
+    def get_fulfilment_info(self):
+        print("Product requires physical shipping")
 
 class DigitalProduct(Product):
     def __init__(self, product_id, name, price, stock, download_size):
@@ -48,7 +58,11 @@ class DigitalProduct(Product):
 
     # Override the parent method
     def display_information(self):
-        print(f"ID: {self.__product_id} | Name: {self.__name} | Price: {self.__price} | Stock: {self.__stock} | Download Size: {self.__download_size}")
+        super().display_information()
+        print(f"Download Size: {self.__download_size}")
+
+    def get_fulfilment_info(self):
+        print("Product is delivered digitally")
     
 
             
