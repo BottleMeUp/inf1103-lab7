@@ -1,0 +1,34 @@
+[
+    {
+        "ID": "P001",
+        "Name": "Laptop",
+        "Price": 1500.0,
+        "Stock": 15,
+        "Type": "physical",
+        "Weight": 6.0
+    },
+    {
+        "ID": "P002",
+        "Name": "Keyboard",
+        "Price": 50.0,
+        "Stock": 100,
+        "Type": "digital",
+        "Download Size": 60.0
+    },
+    {
+        "ID": "P003",
+        "Name": "Shoe",
+        "Price": 10.0,
+        "Stock": 50,
+        "Type": "physical",
+        "Weight": 1.0
+    },
+    {
+        "ID": "P004",
+        "Name": "Gold Chain",
+        "Price": 3000.0,
+        "Stock": 5,
+        "Type": "digital",
+        "Download Size": 10.0
+    }
+]
