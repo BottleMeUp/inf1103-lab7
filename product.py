@@ -58,7 +58,7 @@ class PhysicalProduct(Product, CanBeShipped):
         return "Product requires physical shipping"
 
     def calculate_shipping_cost(self):
-        return self.__weight * 100
+        return self.__weight * 10
 
 class DigitalProduct(Product):
     def __init__(self, product_id, name, price, stock, download_size):

@@ -1,7 +1,7 @@
 import json
 import os
 from inventory import Inventory
-from product import PhysicalProduct, DigitalProduct
+from product import Product, PhysicalProduct, DigitalProduct, CanBeShipped
 
 FILENAME = "inventory.json"
 
@@ -63,6 +63,12 @@ def save_inventory(inventory):
 def exit_program(inventory):
     save_inventory(inventory)
     print("Thank you for using Inventory Management System.\nProgram terminated.")
+
+def show_product_details(product):
+    product.display_information()
+    print(f"Fulfilment: {product.get_fulfilment_info()}")
+    if isinstance(product, CanBeShipped):
+        print(f"Shipping cost: ${product.calculate_shipping_cost():.2f}")
 
 
 def show_menu():
@@ -139,7 +145,7 @@ while True:
             product_id = input("Enter Product ID: ").strip()
             product = main_inventory.search_product(product_id)
             if product:
-                product.display_information()
+                show_product_details(product)
             else:
                 print("Product not found.")
         case 5:
