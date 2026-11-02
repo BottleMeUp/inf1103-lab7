@@ -1,7 +1,9 @@
 import json
 import os
 from inventory import Inventory
-from product import Product, PhysicalProduct, DigitalProduct, CanBeShipped
+from physical_product import PhysicalProduct
+from digital_product import DigitalProduct
+from interface import CanBeShipped
 
 FILENAME = "inventory.json"
 
